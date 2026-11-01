@@ -2,6 +2,7 @@
 
 from functools import lru_cache
 from typing import Literal
+from sqlalchemy.engine import URL
 
 from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -27,12 +28,15 @@ class Settings(BaseSettings):
     postgres_port: int = 5432
 
     @property
-    def database_url(self) -> str:
-        """Connection string built from the parts above."""
-        return (
-            f"postgresql+psycopg2://{self.postgres_user}:"
-            f"{self.postgres_password.get_secret_value()}@"
-            f"{self.postgres_host}:{self.postgres_port}/{self.postgres_db}"
+    def database_url(self) -> URL:
+        """Connection URL, built safely so special characters can't break it."""
+        return URL.create(
+            drivername="postgresql+psycopg2",
+            username=self.postgres_user,
+            password=self.postgres_password.get_secret_value(),
+            host=self.postgres_host,
+            port=self.postgres_port,
+            database=self.postgres_db,
         )
 
 
