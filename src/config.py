@@ -26,6 +26,9 @@ class Settings(BaseSettings):
     postgres_db: str = "rag_db"
     postgres_host: str = "localhost"
     postgres_port: int = 5432
+        # OpenSearch and Ollama
+    opensearch_host: str = "http://localhost:9200"
+    ollama_host: str = "http://localhost:11434"
 
     @property
     def database_url(self) -> URL:
@@ -37,6 +40,7 @@ class Settings(BaseSettings):
             host=self.postgres_host,
             port=self.postgres_port,
             database=self.postgres_db,
+
         )
 
 
